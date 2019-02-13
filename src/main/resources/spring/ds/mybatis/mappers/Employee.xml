@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pactera.demo.po.Employee">
+	<resultMap id="BaseResultMap" type="com.pactera.demo.po.Employee">
+		<id column="ID" property="id" />
+		<result column="NAME" property="name" />
+		<result column="SEX" property="sex" />
+		<result column="AGE" property="age" />
+		<result column="DEPT" property="dept" />
+	</resultMap>
+
+	<sql id="Table_Name">
+		employee_zlh
+	</sql>
+
+	<sql id="Base_Column">
+		ID,
+		NAME,
+		SEX,
+		AGE,
+		DEPT
+	</sql>
+
+	<sql id="Base_Where">
+		<trim prefix="(" suffix=")" suffixOverrides="AND">
+			<if test="id != null">
+				ID= #{id}
+				AND
+			</if>
+			<if test="name != null">
+				NAME= #{name}
+				AND
+			</if>
+		</trim>
+	</sql>
+
+	<sql id="Base_OrderBy">
+		<trim suffixOverrides=",">
+			<if test="orderby_id != null">
+				ID,
+			</if>
+			<if test="orderby_name != null">
+				NAME
+			</if>
+		</trim>
+	</sql>
+
+	<insert id="insert" parameterType="com.pactera.demo.po.TestAppPo">
+		insert into
+		<include refid="Table_Name" />
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				ID,
+			</if>
+			<if test="name != null">
+				NAME
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id},
+			</if>
+			<if test="name != null">
+				#{name}
+			</if>
+		</trim>
+	</insert>
+
+	<update id="update" parameterType="com.pactera.demo.po.TestAppPo">
+		update
+		<include refid="Table_Name" />
+		<set>
+			<if test="id != null">
+				ID=#{id},
+			</if>
+			<if test="name != null">
+				NAME=#{name}
+			</if>
+		</set>
+		where
+		ID=#{id}
+	</update>
+
+	<update id="updateByEntity" parameterType="com.pactera.demo.po.TestAppPo">
+		UPDATE
+		<include refid="Table_Name" />
+		<set>
+			<if test="s.name != null">
+				NAME=#{s.name}
+			</if>
+		</set>
+		<where>
+			<trim prefix="(" suffix=")" suffixOverrides="AND">
+				<if test="w.id != null">
+					ID=#{w.id}
+					AND
+				</if>
+				<if test="w.name != null">
+					NAME=#{w.name}
+					AND
+				</if>
+			</trim>
+		</where>
+	</update>
+
+	<delete id="delete" parameterType="com.pactera.demo.po.TestAppPo">
+		delete from
+		<include refid="Table_Name" />
+		<where>
+			<include refid="Base_Where" />
+		</where>
+	</delete>
+
+	<select id="count" parameterType="java.util.Map" resultType="int">
+		select count(1) from
+		<include refid="Table_Name" />
+		<where>
+			<include refid="Base_Where" />
+		</where>
+	</select>
+
+	<select id="selectOne" parameterType="com.pactera.demo.po.TestAppPo"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column" />
+		from
+		<include refid="Table_Name" />
+		<where>
+			<include refid="Base_Where" />
+		</where>
+	</select>
+
+	<select id="selectList" parameterType="java.util.Map" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column" />
+		from
+		<include refid="Table_Name" />
+		<where>
+			<include refid="Base_Where" />
+		</where>
+	</select>
+
+</mapper>

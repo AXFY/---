@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- 批量必需的公共配置 -->
+<bean id ="aa" class="com.dap.batch.utils.FileTemplateContext" init-method="getInstance"/>
+
+	<!-- 用于同一组（同一系统）内的stepExecutor和stepService -->
+	<bean id="batchRefContainer" class="com.dap.utils.DubboReferenceContainer">
+		<constructor-arg ref="defaultRegistry" />
+	</bean>
+
+	<!-- 自定义线程池 -->
+	<bean id="complexThreadPool" class="com.dap.batch.pool.ComplexThreadPool"
+		init-method="init">
+		<property name="minSize" value="${batch.pool.minSize}" />
+		<property name="maxSize" value="${batch.pool.maxSize}" />
+		<property name="maxIdleSize" value="${batch.pool.maxIdleSize}" />
+		<property name="maxQueueSize" value="${batch.pool.maxQueueSize}" />
+		<property name="checkPeriod" value="${batch.pool.checkPeriod}" />
+	</bean>
+
+	<!-- 线程池监控器 -->
+	<bean id="threadPoolMonitor" class="com.dap.monitor.SimpleMonitorAgent"
+		init-method="init">
+		<!-- <property name="monitorService" ref="monitorService" /> -->
+		<property name="target" ref="complexThreadPool" />
+		<property name="interval" value="10" />
+		<property name="period" value="1" />
+	</bean>
+
+	<!-- threadPool 可选，不配置时会使用默认的线程池，只有基本功能，且无法被监控 -->
+	<bean id="batchStepService" class="com.pactera.demo.batch.BatchStepServiceJsonImpl"
+		init-method="init">
+		<property name="jobService" ref="batchJobService" />
+		<property name="refContainer" ref="batchRefContainer" />
+		<property name="threadPool" ref="complexThreadPool" />
+	</bean>
+
+	<!-- batch step 专用业务抽象父类 -->
+	<bean id="batchAbstractStepExecutor" class="com.dap.batch.service.BatchAbstractStepExecutor"
+		abstract="true">
+		<property name="dao" ref="daoService" />
+		<property name="txManager" ref="transactionManager" />
+	</bean>
+
+	<!-- 分片辅助类 -->
+<!-- 	<bean id="shardHelper" class="com.dap.batch.sharding.MycatShardHelper" -->
+<!-- 		init-method="init"> -->
+<!-- 		<property name="schemaPath" value="${batch.mycat.schemaPath}" /> -->
+<!-- 		<property name="zkConnStr" value="${batch.mycat.zkConnStr}" /> -->
+<!-- 	</bean> -->
+
+	<!--配置XX批量服务，与step表的clazz一致 -->
+	<bean id="demoBatchStep" class="com.pactera.demo.batch.DemoBatchStep"
+		parent="batchAbstractStepExecutor">
+	</bean>
+
+	<bean id="demoBatchStep1" class="com.pactera.demo.batch.DemoBatchStep1"
+		parent="batchAbstractStepExecutor">
+	</bean>
+
+	<bean id="demoBatchStep2" class="com.pactera.demo.batch.DemoBatchStep2"
+		parent="batchAbstractStepExecutor">
+	</bean>
+
+	<bean id="demoBatchStep3" class="com.pactera.demo.batch.DemoBatchStep3"
+		parent="batchAbstractStepExecutor">
+<!-- 		<property name="shardHelper" ref="shardHelper" /> -->
+	</bean>
+	<bean id="demoBatchStep5" class="com.pactera.demo.batch.DemoBatchStep5"
+		  parent="batchAbstractStepExecutor">
+
+	</bean>
+	<bean id="demoBatchStep4" class="com.pactera.demo.batch.DemoBatchStep4"
+		  parent="batchAbstractStepExecutor">
+
+	</bean>
+
+	<bean id="demoBatchStep6" class="com.pactera.demo.batch.DemoBatchStep6"
+		  parent="batchAbstractStepExecutor">
+
+	</bean>
+
+	<bean id="SelectBatchStep" class="com.pactera.demo.batch.SelectBatchStep"
+		  parent="batchAbstractStepExecutor">
+
+	</bean>
+		<!--parent="batchAbstractStepExecutor">-->
+
+
+</beans>

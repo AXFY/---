@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:dubbo="http://code.alibabatech.com/schema/dubbo" xmlns:dap-rpc="http://code.dap.com/schema/rpc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd
+        http://code.dap.com/schema/rpc http://code.dap.com/schema/rpc/cmbc-rpc.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<context:property-placeholder
+		location="classpath*:config/application.properties,classpath*:config/bootstrap.properties,classpath*:config/system.properties" />
+
+	<dubbo:application name="demo-batch-test" />
+	<dubbo:registry id="defaultRegistry" client="curator"
+		protocol="dap" address="172.19.68.238:2181" group="select"/>
+	<dubbo:protocol id="dubbo"  name="dubbo" port="20883"
+		default="true" />
+
+	<dubbo:reference id="batchJobService"
+		interface="com.dap.batch.service.IBatchJobService" group="batchJobService" />
+	<dubbo:reference id="batchGroupService" registry="defaultRegistry"
+	interface="com.dap.batch.service.IBatchGroupService" group="batchGroupService" />
+
+	<dubbo:reference id="batchJobServiceJson" interface="com.dap.api.IService"
+		group="batchJobService" version="1.0.0" />
+	<dubbo:reference id="batchGroupServiceJson" interface="com.dap.api.IService"
+		group="batchGroupService" version="1.0.0" />
+</beans>
